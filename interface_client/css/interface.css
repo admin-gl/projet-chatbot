@@ -1,0 +1,29 @@
+﻿body {
+    font-family: Rubik;
+}
+
+.dialogue-box {
+    width: 100%;
+    height: 150px;
+    border: 1px solid #CCCCCC;
+    padding: 10px;
+    margin-bottom: 10px;
+    overflow: auto;
+}
+
+
+/* User name colors */
+
+.bot {
+    color: #0000FF;
+    font-weight: bold;
+}
+
+.user {
+    color: #FF0000;
+    font-weight: bold;
+}
+
+.msg {
+    word-wrap: break-word;
+}
