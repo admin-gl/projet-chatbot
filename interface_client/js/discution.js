@@ -1,5 +1,5 @@
 ﻿window.bot = null;
-let code = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ h\n- hello';
+let code = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- je comprends pas frere';
 
 $(document).ready(() => {
 
@@ -29,7 +29,7 @@ $(document).ready(() => {
     $("#dialogue").empty();
 
     $("#message").keydown((e) => {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             console.log('enter');
             var $dialogue = $("#dialogue");
             var $message = $("#message");
@@ -39,13 +39,13 @@ $(document).ready(() => {
             }
 
             var message = $message.val();
-            if (message.length == 0) {
+            if (message.length === 0) {
                 return;
             }
 
             // Echo the user immediately and clear their input.
             var $user = $("<div class='msg-user'></div>");
-            $user.html('<span class="user">User:</span>><div class="msg">' + message + "</div>");
+            $user.html('<span class="user">User</span><div class="msg">' + message + "</div>");
             $dialogue.append($user);
             $message.val("");
 
@@ -55,7 +55,7 @@ $(document).ready(() => {
 
                 // Update the dialogue.
                 var $bot = $("<div class='msg-bot'></div>");
-                $bot.html('<span class="user">Bot:</span>><div class="msg">' + reply + "</div>");
+                $bot.html('<span class="bot">Bot</span><div class="msg">' + reply + "</div>");
                 $dialogue.append($bot);
 
                 // Scroll to bottom.
