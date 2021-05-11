@@ -6,7 +6,7 @@
 
 .dialogue-box {
     width: 500px;
-    height: 700px;
+    height: 90%;
     border: 1px solid rgb(47, 39, 54);
     padding: 10px;
     margin-bottom: 10px;
@@ -82,4 +82,48 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgb(21, 14, 27);
+}
+
+.chatbot-selector {
+    position: absolute;
+    top: 5%;
+    left: 600px;
+}
+
+.chatbot-selector select {
+    background-color: rgb(92, 54, 126);
+    color: white;
+    padding: 12px;
+    width: 250px;
+    border: none;
+    font-size: 16px;
+    font-family: Rubik;
+    -webkit-appearance: button;
+    appearance: none;
+    outline: none;
+}
+
+.chatbot-selector::before {
+    content: "\f13a";
+    font-family: FontAwesome;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20%;
+    height: 100%;
+    text-align: center;
+    font-size: 28px;
+    line-height: 45px;
+    color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+}
+
+.chatbot-selector:hover::before {
+    color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.chatbot-selector select option {
+    padding: 30px;
 }

@@ -1,5 +1,8 @@
 ﻿window.bot = null;
-let code = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- je comprends pas frere';
+let code = '';
+let Steve = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- je comprends pas frere';
+let Coco = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- nope';
+let listeNom = ['Steve', 'Coco'];
 
 $(document).ready(() => {
 
@@ -18,19 +21,35 @@ $(document).ready(() => {
     });
     */
 
-    window.bot = new RiveScript();
-    window.bot.setHandler("coffeescript", new RSCoffeeScript(window.bot));
-    window.bot.stream(code, function(error) {
-        window.alert("Error in your RiveScript code:\n\n" + error);
+    listeNom.forEach((nom) => {
+        $('#selection').append($(`<option value="${nom.toLowerCase()}">${nom}</option>`));
     });
-    window.bot.sortReplies();
 
-    // Reset the dialogue.
-    $("#dialogue").empty();
+    $("#selection").change(() => {
+        let $selected = $("#selection option:selected")[0];
+        if ($selected.value !== "") {
+
+            if ($selected.value === 'coco') {
+                code = Coco;
+            } else {
+                code = Steve;
+            }
+
+            window.bot = new RiveScript();
+            window.bot.setHandler("coffeescript", new RSCoffeeScript(window.bot));
+            window.bot.stream(code, function(error) {
+                window.alert("Error in your RiveScript code:\n\n" + error);
+            });
+            window.bot.sortReplies();
+
+            // Reset the dialogue.
+            $("#dialogue").empty();
+        }
+    });
+
 
     $("#message").keydown((e) => {
         if (e.keyCode === 13) {
-            console.log('enter');
             var $dialogue = $("#dialogue");
             var $message = $("#message");
 
