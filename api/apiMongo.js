@@ -40,9 +40,9 @@ async function createBot(client, bot) {
 }
 
 async function getBrains(client) {
-    var bList = await client.db("projectDB").collection("brains").find()
-    console.log(bList)
-    return bList;
+    let bList = await client.db("projectDB").collection("brains").find({}).toArray();
+    return bList
+
 }
 
 async function createUser(client, user) {
@@ -52,7 +52,7 @@ async function createUser(client, user) {
 
 async function getUsers(client) {
     let uList = await client.db("projectDB").collection("users").find({}).toArray()
-    return JSON.stringify(uList);
+    return uList;
 }
 
 api.get("/test", (req, res) => {
@@ -62,8 +62,9 @@ api.get("/test", (req, res) => {
     }))
 })
 
-api.get("/bList", (req, res) => {
-    res.send(getBrains(client))
+api.get("/bList", async(req, res) => {
+    var bList = await getBrains(client)
+    res.send(bList)
 })
 
 api.get("/uList", async(req, res) => {

@@ -2,24 +2,27 @@
 let code = '';
 let Steve = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- je comprends pas frere';
 let Coco = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- nope';
-let listeNom = ['Steve', 'Coco'];
+let listeNom = Array();
+let listeCode = Array();
 
 $(document).ready(() => {
 
-    /*
-    Pour plus tard
     $.ajax({
-        url: "",
+        url: "localhost:3002/bList",
+        method: "GET",
         dataType: "text",
         error: function(jqXHR, textStatus, error) {
-            window.alert(error);
+            window.alert("fuck");
         },
         success: function(data, textStatus, jqXHR) {
-            code = data
-            console.log(code)
+            data.forEach((brain) => {
+                listeNom.push(brain.name);
+                listeCode.push(brain.cerveau);
+            })
+            console.log('nice');
         }
     });
-    */
+
 
     listeNom.forEach((nom) => {
         $('#selection').append($(`<option value="${nom.toLowerCase()}">${nom}</option>`));
