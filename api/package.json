@@ -3,15 +3,5 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "mongodb": "^3.6.9"
-  },
-  "name": "api",
-  "version": "1.0.0",
-  "main": "apiMongo.js",
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  }
 }

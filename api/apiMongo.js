@@ -1,12 +1,12 @@
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require("mongodb").ObjectID
 const express = require("express");
 const bodyParser = require("body-parser");
 const api = express();
 const port = 3002;
 
-
 api.use(bodyParser.json());
-api.use(bodyParser.urlencoded({ extended: false }));
+api.use(bodyParser.urlencoded({ extended: true }));
 const uri = "mongodb+srv://admin:oTQ2VwkR6D4cJAh2@cluster.4vwhu.mongodb.net/projectDB?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -35,14 +35,30 @@ async function listDB(client) {
 
 
 async function createBot(client, bot) {
+    console.log("bot", bot)
     const result = await client.db("projectDB").collection("brains").insertOne(bot)
     console.log("Ajouté nouveau cerveau")
 }
 
 async function getBrains(client) {
-    let bList = await client.db("projectDB").collection("brains").find({}).toArray();
-    return bList
+    var bList = await client.db("projectDB").collection("brains").find({}).toArray()
+    return bList;
+}
 
+async function getBrains(client, interface) {
+    if (interface == "discord") {
+        var bList = await client.db("projectDB").collection("brains").find({ discord: true }).toArray()
+        return bList;
+    } else if (interface == "mastodon") {
+        var bList = await client.db("projectDB").collection("brains").find({ mastodon: true }).toArray()
+        return bList;
+    } else if (interface == "navigateur") {
+        var bList = await client.db("projectDB").collection("brains").find({ notreInterface: true }).toArray()
+        return bList;
+    } else if (interface == "all") {
+        var bList = await client.db("projectDB").collection("brains").find({}).toArray()
+        return bList;
+    }
 }
 
 async function createUser(client, user) {
@@ -52,15 +68,24 @@ async function createUser(client, user) {
 
 async function getUsers(client) {
     let uList = await client.db("projectDB").collection("users").find({}).toArray()
-    return uList;
+    return JSON.stringify(uList);
 }
 
-api.get("/test", (req, res) => {
-    res.send(JSON.stringify({
-        name: "Glenan",
-        pwd: "1234"
-    }))
-})
+async function deleteBot(id) {
+    let res = await client.db("projectDB").collection("brains").deleteOne({ "_id": ObjectId(id) })
+    console.log("Successfully deleted bot id:", id)
+}
+
+async function chPerm(interface, id) {
+    var brain = await client.db("projectDB").collection("brains").findOne({ "_id": ObjectId(id) })
+    if (interface == "discord") {
+        let res = await client.db("projectDB").collection("brains").updateOne({ "_id": ObjectId(id) }, { $set: { discord: !brain.discord } })
+    } else if (interface == "mastodon") {
+        let res = await client.db("projectDB").collection("brains").updateOne({ "_id": ObjectId(id) }, { $set: { mastodon: !brain.mastodon } })
+    } else if (interface == "navigateur") {
+        let res = await client.db("projectDB").collection("brains").updateOne({ "_id": ObjectId(id) }, { $set: { notreInterface: !brain.notreInterface } })
+    }
+}
 
 api.get("/bList", async(req, res) => {
     var bList = await getBrains(client)
@@ -73,6 +98,17 @@ api.get("/uList", async(req, res) => {
     res.send(ulist)
 })
 
+api.get("/delete/:id", (req, res) => {
+    var id = req.params["id"]
+    deleteBot(id)
+})
+
+api.get("/perm/:interface/:id", (req, res) => {
+    var id = req.params["id"]
+    var interface = req.params["interface"]
+    chPerm(interface, id)
+})
+
 api.post("/uploadbot", (req, res) => {
     bot = req.body
     console.log("BOT", bot)
@@ -81,6 +117,12 @@ api.post("/uploadbot", (req, res) => {
     } catch (error) {
         console.log(error)
     }
+})
+
+api.get("/bList/:interface", async(req, res) => {
+    var iface = req.params["interface"]
+    var bList = await getBrains(client, iface)
+    res.send(bList)
 })
 
 api.listen(port, () => {

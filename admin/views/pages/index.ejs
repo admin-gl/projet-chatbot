@@ -10,6 +10,52 @@
         body {
             padding-top: 50px;
         }
+        /* Dropdown Button */
+        
+        .dropbtn {
+            padding: 2px;
+            font-size: 16px;
+            border: none;
+        }
+        /* The container <div> - needed to position the dropdown content */
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        /* Dropdown Content (Hidden by Default) */
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 100px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+        /* Links inside the dropdown */
+        
+        .dropdown-content input {
+            color: black;
+            padding: 6px 6px;
+            text-decoration: none;
+            display: block;
+        }
+        /* Change color of dropdown links on hover */
+        
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+        /* Show the dropdown menu on hover */
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        /* Change the background color of the dropdown button when the dropdown content is shown */
+        
+        .dropdown:hover .dropbtn {
+            background-color: #ffffff;
+        }
     </style>
 </head>
 
@@ -21,12 +67,65 @@
         <div class="jumbotron">
             <h1>Welcome</h1>
         </div>
-        <form action="uploadbot" method=POST enctype="multipart/form-data">
+        <form action="uploadbot" method="POST" enctype="multipart/form-data">
             <input id="botfile" type="file" name="botfile" />
             <input type="submit">
         </form>
 
-        <button onclick="">Create new bot</button>
+        <form action="newdefault" method="POST">
+            <input type="submit" value="Nouveau par défaut">
+        </form>
+
+        <ul>
+            <% if (undefined !== bList){
+                bList.forEach(function(brain) { %>
+                <li>
+                    <strong>
+                        <%= brain.nom %>
+                        <form action="/delete" method="POST">
+                            <input type="hidden" name="id" value="<%= brain._id %>" />
+                            <input type="submit" value="Supprimer"/>
+                        </form>
+                        <div class="dropdown">
+                            <button class="dropbtn">Permissions</button>
+                            <div class="dropdown-content">
+
+
+                                <form action="/perm/discord" method="POST">
+                                    <input type="hidden" name="id" value="<%= brain._id %>" />
+                                    <% if (brain.discord){ %>
+                                        <input type="submit" value="Discord" style="color: rgb(12, 141, 0);">
+                                    <% } else { %>
+                                        <input type="submit" value="Discord" style="color: rgb(133, 0, 0);">
+                                    <% } %>
+                                </form>
+
+
+                                <form action="/perm/mastodon" method="POST">
+                                    <input type="hidden" name="id" value="<%= brain._id %>" />
+                                    <% if (brain.mastodon){ %>
+                                        <input type="submit" value="Mastodon" style="color: rgb(12, 141, 0);">
+                                    <% } else { %>
+                                        <input type="submit" value="Mastodon" style="color: rgb(133, 0, 0);">
+                                    <% } %>
+                                </form>
+
+
+                                <form action="/perm/navigateur" method="POST">
+                                    <input type="hidden" name="id" value="<%= brain._id %>" />
+                                    <% if (brain.notreInterface){ %>
+                                        <input type="submit" value="Navigateur" style="color: rgb(12, 141, 0);">
+                                    <% } else { %>
+                                        <input type="submit" value="Navigateur" style="color: rgb(133, 0, 0);">
+                                    <% } %>
+                                </form>
+                            </div>
+                        </div>
+                        
+                    </strong>
+                </li>
+                <% });} %>
+        </ul>
     </main>
     <footer>
         <p class="text-center text-muted">RiveScript Bot</p>

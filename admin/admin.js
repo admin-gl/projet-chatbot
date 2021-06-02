@@ -4,14 +4,16 @@ const admin_port = 3001;
 const fetch = require("node-fetch");
 const bodyParser = require("body-parser");
 const fileupload = require("express-fileupload")
-const json = require("express");
-const http = require("http");
-const multer = require("multer");
+    //const json = require("express");
+    //const http = require("http");
+    //const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const bot = require("./bot.js");
 const { userInfo } = require("os");
+const { emitWarning } = require("process");
 const apiURI = "http://localhost:3002"
+
 
 administrator.use(fileupload({
     createParentPath: false,
@@ -24,7 +26,10 @@ administrator.set("view engine", "ejs");
 
 
 administrator.get("/", (req, res) => {
-    res.render("pages/index")
+
+    fetch(apiURI + "/bList/all").then(res => res.json()).then(jSon => {
+        res.render("pages/index", { bList: jSon })
+    })
 
 });
 
@@ -33,31 +38,37 @@ administrator.get("/login", (req, res) => {
 
 });
 
+administrator.post("/delete", (req, res) => {
+    id = req.body.id
+        //console.log("delete bot id : ", botId)
+    fetch(apiURI + "/delete/" + id)
+    res.redirect("/")
+})
+
+administrator.post("/perm/:interface", (req, res) => {
+    id = req.body.id
+    iface = req.params["interface"]
+    fetch(apiURI + "/perm/" + iface + "/" + id)
+    res.redirect("/")
+})
+
 administrator.post("/login", (req, res) => {
 
 })
-
 administrator.get("/signin", (req, res) => {
     res.render("pages/signinpage")
 })
-
 administrator.post("/signin", (req, res) => {
-        var nom = req.body.nom
-        var mdp = req.body.mdp
-        User.signin(new User(nom, prenom))
-    })
-    /*
-    fetch(apiURI + "/uList").then(res => res.json()).then(json => {
-        console.log(json)
-    })
-    */
+    var nom = req.body.nom
+    var mdp = req.body.mdp
+    User.signin(new User(nom, prenom))
+})
 administrator.post("/login", (req, res) => {
     //check login info with db
     res.render("pages/index")
         //set session
         //fetch list of brains
 });
-
 administrator.post("/uploadbot", (req, res) => {
     //console.log("uploaded : ", req.files.botfile)
     //console.log("path : ", req.files.botfile.tempFilePath)
@@ -67,16 +78,23 @@ administrator.post("/uploadbot", (req, res) => {
     console.log("obj : ", newBot)
     console.log("json : ", jsonStringBot)
     fetch("http://localhost:3002/uploadbot/", {
+            method: "POST",
+            body: jsonStringBot,
+            headers: { "Content-Type": "application/json" }
+        })
+        //console.log(fileString)
+    res.redirect("/")
+})
+administrator.post("/newdefault", (req, res) => {
+    var newBot = new bot("default.rive", "+ hello bot\n- Hello human!")
+    var jsonStringBot = JSON.stringify(newBot)
+    fetch("http://localhost:3002/uploadbot/", {
         method: "POST",
         body: jsonStringBot,
         headers: { "Content-Type": "application/json" }
     })
-
-
-    //console.log(fileString)
-    res.send("ok")
+    res.redirect("/")
 })
-
 
 administrator.listen(admin_port, () => {
     console.log("Administrator listening on port 3001");
