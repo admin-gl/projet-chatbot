@@ -21,8 +21,11 @@
         <div class="jumbotron">
             <h1>Welcome</h1>
         </div>
-        <button onclick="document.getElementById('file-input').click();">Upload new bot</button>
-        <input id="file-input" type="file" name="name" style="display: none;" />
+        <form action="uploadbot" method=POST enctype="multipart/form-data">
+            <input id="botfile" type="file" name="botfile" />
+            <input type="submit">
+        </form>
+
         <button onclick="">Create new bot</button>
     </main>
     <footer>
