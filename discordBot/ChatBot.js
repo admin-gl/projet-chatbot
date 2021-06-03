@@ -1,9 +1,10 @@
 ﻿const Discord = require('discord.js');
 const fetch = require("node-fetch");
+const config = require("./config.json");
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL'] });
 
 // on choisis un préfixe pour les commandes du bot
-const prefixe = 'c.';
+const prefixe = config.prefix;
 
 // on ajoute un filestream pour lire/ecrire dans des fichiers
 const fs = require('fs');
@@ -88,4 +89,4 @@ function timeout() { // supprime les conversations discord non utilisées
 
 setTimeout(timeout, 5000);
 
-client.login('ODQ5NjgyNTIyODc4MTE1ODUw.YLeugw.1GOq_QBDH3IeVtdVxvDYtMYRYQo');
+client.login(config.token);
