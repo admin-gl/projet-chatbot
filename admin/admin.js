@@ -10,9 +10,12 @@ const fileupload = require("express-fileupload")
 const path = require("path");
 const fs = require("fs");
 const bot = require("./bot.js");
+const user = require("./user.js");
 const { userInfo } = require("os");
 const { emitWarning } = require("process");
+const { get } = require("http");
 const apiURI = "http://localhost:3002"
+const session = require("express-session")
 
 
 administrator.use(fileupload({
@@ -20,22 +23,27 @@ administrator.use(fileupload({
     useTempFiles: true,
     tempFileDir: "./tmp/"
 }));
+administrator.use(session({ secret: "Secret", name: "sessionID", saveUninitialized: false }))
 administrator.use(bodyParser.json());
 administrator.use(bodyParser.urlencoded({ extended: false }));
 administrator.set("view engine", "ejs");
 
 
+administrator.get("/logout", (req, res) => {
+    req.session.destroy()
+    res.redirect("/")
+})
+
 administrator.get("/", (req, res) => {
 
     fetch(apiURI + "/bList/all").then(res => res.json()).then(jSon => {
-        res.render("pages/index", { bList: jSon })
+        res.render("pages/index", { bList: jSon, session: req.session })
     })
 
 });
 
 administrator.get("/login", (req, res) => {
-    res.render("pages/loginpage")
-
+    res.render("pages/login")
 });
 
 administrator.post("/delete", (req, res) => {
@@ -53,22 +61,39 @@ administrator.post("/perm/:interface", (req, res) => {
 })
 
 administrator.post("/login", (req, res) => {
-
+    let nom = req.body.nom
+    let pwd = req.body.mdp
+    let uSer = new user(nom, pwd)
+    userString = JSON.stringify(uSer)
+    fetch("http://localhost:3002/login/", {
+        method: "POST",
+        body: userString,
+        headers: { "Content-Type": "application/json" }
+    }).then(result => result.json()).then((json) => {
+        console.log(json)
+        if (json) {
+            fetch(apiURI + "/bList/all").then(res => res.json()).then(jSon => {
+                req.session.loggedIn = true
+                req.session.userName = uSer.nom
+                req.session.isAdmin = uSer.admin
+                console.log(req.session)
+                res.redirect("/")
+            })
+        } else {
+            res.sendStatus(404)
+        }
+    })
 })
 administrator.get("/signin", (req, res) => {
     res.render("pages/signinpage")
 })
+
 administrator.post("/signin", (req, res) => {
     var nom = req.body.nom
     var mdp = req.body.mdp
     User.signin(new User(nom, prenom))
 })
-administrator.post("/login", (req, res) => {
-    //check login info with db
-    res.render("pages/index")
-        //set session
-        //fetch list of brains
-});
+
 administrator.post("/uploadbot", (req, res) => {
     //console.log("uploaded : ", req.files.botfile)
     //console.log("path : ", req.files.botfile.tempFilePath)
