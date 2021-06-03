@@ -17,6 +17,7 @@ const { get } = require("http");
 const apiURI = "http://localhost:3002"
 const session = require("express-session");
 const { response } = require("express");
+const { json } = require("body-parser");
 
 
 administrator.use(fileupload({
@@ -75,8 +76,9 @@ administrator.post("/login", (req, res) => {
         if (json !== false) {
             fetch(apiURI + "/bList/all").then(res => res.json()).then(jSon => {
                 req.session.loggedIn = true
-                req.session.userName = json.name
+                req.session.userName = json.nom
                 req.session.isAdmin = json.admin
+                req.session._id = json._id
                 console.log(req.session)
                 res.redirect("/")
             })
@@ -122,10 +124,11 @@ administrator.post("/newdefault", (req, res) => {
     res.redirect("/")
 })
 
-administrator.get("/:userID/:botID/interface", async(req, res) => {
-    let brain = await fetch(`http://localhost:3002/bList/${req.params["botID"]}`);
-
-    res.render("pages/interface/discution.ejs", { brain: brain });
+administrator.get("/chat/:userID/:botID", async(req, res) => {
+    console.log(req.session);
+    fetch(`http://localhost:3002/brain/${req.params["botID"]}`)
+        .then(x => x.json())
+        .then(brain => res.render("pages/discution.ejs", { brain: brain, session: req.session }));
 })
 
 

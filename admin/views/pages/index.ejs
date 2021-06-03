@@ -105,8 +105,7 @@
                         <li>
                             <strong>
                             <%= brain.nom %>
-                            <form action="/chat" method="POST">
-                                <input type="hidden" name="chatid" value="<%= brain._id %>" />
+                            <form action= "<%=`/chat/${session._id}/${brain._id}`%>" method="GET">
                                 <input type="submit" value="Chatter"/>
                             </form>
                             <br>

@@ -32,13 +32,13 @@ async function listDB(client) {
 }
 
 async function auth(user) {
-    nomU = user.nom
-    mdpU = user.mdp
-    res = await client.db("projectDB").collection("users").findOne({ name: nomU })
+    let nomU = user.nom
+    let mdpU = user.mdp
+    res = await client.db("projectDB").collection("users").findOne({ nom: nomU })
     console.log(res)
-    if (res.password != mdpU) {
+    if (res.mdp != mdpU) {
         return false
-    } else if (res.password == mdpU) {
+    } else if (res.mdp == mdpU) {
         return res
     }
 }
@@ -211,6 +211,7 @@ api.get("/brain/:id", async(req, res) => {
 
 api.post("/login", async(req, res) => {
     user = req.body
+    console.log(user);
     user = await auth(user)
     console.log(user)
     if (user == false) {

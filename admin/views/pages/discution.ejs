@@ -1,0 +1,180 @@
+﻿<html>
+
+
+<head>
+    <title>Chatting with
+        <%=brain.nom%>
+    </title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/rivescript@latest/dist/rivescript.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/rivescript-contrib-coffeescript@latest/dist/rivescript-contrib-coffeescript.min.js"></script>
+    <script type="text/javascript">
+        window.bot = null;
+        let brain = null;
+        let code = '';
+        let user = '';
+        let Steve = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- je comprends pas frere';
+
+        $(document).ready(() => {
+
+            document.onbeforeunload = () => {
+                fetch(`http://localhost:3002/sesscount/${window.bot[0]._id}/interface/-`);
+            }
+            brain = <%-JSON.stringify(brain) %>;
+            user = "<%= session.userName %>";
+
+            code = brain.cerveau;
+
+            window.bot = [brain, new RiveScript()];
+            window.bot[1].stream(code, function(error) {
+                window.alert("Error in the RiveScript code:\n\n" + error);
+            });
+            window.bot[1].sortReplies();
+            fetch(`http://localhost:3002/sesscount/${window.bot[0]._id}/interface/+`).catch(err => console.log(err));
+
+            // Reset the dialogue.
+            $("#dialogue").empty();
+
+
+
+            $("#message").keydown((e) => {
+                if (e.keyCode === 13) {
+                    var $dialogue = $("#dialogue");
+                    var $message = $("#message");
+
+                    if (window.bot[1] === null) {
+                        return; // No bot? Weird.
+                    }
+
+                    var message = $message.val();
+                    if (message.length === 0) {
+                        return;
+                    }
+
+                    // Echo the user immediately and clear their input.
+                    var $user = $("<div class='msg-user'></div>");
+                    $user.html(`<span class="user">${user}</span><div class="msg">${message}</div>`);
+                    $dialogue.append($user);
+                    $message.val("");
+
+                    // Fetch the reply.
+                    window.bot[1].reply("local-user", message).then((reply) => {
+                        reply = reply.replace(new RegExp("\n", "g"), "<br>");
+
+                        // Update the dialogue.
+                        var $bot = $("<div class='msg-bot'></div>");
+                        $bot.html(`<span class="bot">${window.bot[0].nom}</span><div class="msg">${reply}</div>`);
+                        $dialogue.append($bot);
+
+                        // Scroll to bottom.
+                        $dialogue.animate({
+                            scrollTop: $dialogue[0].scrollHeight
+                        }, 1000);
+                    });
+                }
+            })
+        });
+    </script>
+
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik">
+    <style>
+        body {
+            font-family: Rubik;
+            color: white;
+            background-color: rgb(32, 26, 37);
+        }
+        
+        .dialogue-box {
+            width: 500px;
+            height: 90%;
+            border: 1px solid rgb(47, 39, 54);
+            padding: 10px;
+            margin-bottom: 10px;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .bot {
+            color: rgb(92, 54, 126);
+            font-weight: bold;
+            align-self: flex-start;
+        }
+        
+        .user {
+            color: rgb(92, 54, 126);
+            font-weight: bold;
+            align-self: flex-end;
+        }
+        
+        .msg-bot {
+            align-self: flex-start;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .msg-user {
+            align-self: flex-end;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .msg {
+            word-wrap: break-word;
+            border: 1px solid;
+            border-radius: 10px;
+            border-color: rgb(114, 96, 129);
+            padding-left: 5px;
+            padding-right: 5px;
+            width: fit-content;
+            height: fit-content;
+            color: white;
+            background-color: rgb(114, 96, 129);
+        }
+        
+        .search-container {
+            float: left;
+        }
+        
+        .search-container input[type=text] {
+            padding: 6px;
+            margin-top: 8px;
+            font-size: 17px;
+            border: none;
+            background: #150a11;
+            color: white;
+        }
+        
+         ::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey;
+            border-radius: 10px;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: rgb(21, 14, 27);
+            border-radius: 10px;
+        }
+        
+         ::-webkit-scrollbar-thumb:hover {
+            background: rgb(21, 14, 27);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div id="brain" data-loggedBrain="<%=brain %>"></div>
+    <div id="dialogue" class="dialogue-box"></div>
+    <div class="search-container" method="get" action="search">
+        <input id="message" class="searchBar" type="text" placeholder="Send a message">
+    </div>
+
+</body>
+
+</html>
