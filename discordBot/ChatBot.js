@@ -1,5 +1,5 @@
 ﻿const Discord = require('discord.js');
-//const RiveScript = require('rivescript');
+const fetch = require("node-fetch");
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL'] });
 
 // on choisis un préfixe pour les commandes du bot
@@ -9,6 +9,7 @@ const prefixe = 'c.';
 const fs = require('fs');
 
 const listeChannel = Array();
+const timestamps = new Map();
 
 const BrainMap = new Map();
 
@@ -40,11 +41,13 @@ client.on('message', message => {
             BrainMap.delete(message.channel.id);
             message.channel.delete();
         } else { // traitement d'un message de chat pour le rivescript
-            let bot = BrainMap.get(message.channel.id)
+            let bot = BrainMap.get(message.channel.id)[0];
             bot.reply("local-user", message.content)
                 .then((reply) => {
                     message.channel.send(reply);
                 });
+            timestamps.delete(message.channel.id);
+            timestamps.set(message.channel.id, message.createdAt);
         }
 
         return
@@ -57,10 +60,32 @@ client.on('message', message => {
     const command = args.shift().toLowerCase();
 
     if (command === "start" && args.length > 0) {
-        client.commands.get('start').execute(message, args[0], listeChannel, BrainMap);
+        client.commands.get('start').execute(message, args[0], listeChannel, BrainMap, timestamps);
     } else if (command === "help") {
         client.commands.get('help').execute(message);
     }
 });
+
+function timeout() { // supprime les conversations discord non utilisées
+    let t = Date.now()
+    let toRemove = Array()
+    listeChannel.forEach(chanId => {
+        if (t - timestamps.get(chanId) > 60000) {
+            let chan = client.channels.cache.get(chanId);
+            toRemove.push([chanId, BrainMap.get(chanId)[1]._id]);
+            timestamps.delete(chanId);
+            BrainMap.delete(chanId);
+            chan.delete();
+        }
+    });
+    toRemove.forEach(element => {
+        let i = listeChannel.findIndex(chanId => chanId === element[0]);
+        listeChannel.splice(i, 1);
+        //fetch(`http://localhost:3002/sesscount/${element[1]}/discord/-`);
+    });
+    setTimeout(timeout, 5000);
+}
+
+setTimeout(timeout, 5000);
 
 client.login('ODQ5NjgyNTIyODc4MTE1ODUw.YLeugw.1GOq_QBDH3IeVtdVxvDYtMYRYQo');

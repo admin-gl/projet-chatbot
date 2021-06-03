@@ -1,54 +1,40 @@
 ﻿window.bot = null;
+let brain = null;
 let code = '';
 let Steve = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- je comprends pas frere';
-let Coco = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- nope';
-let listeNom = Array();
-let listeCode = Array();
 
 $(document).ready(() => {
+
+    document.onbeforeunload = () => {
+        fetch(`http://localhost:3002/sesscount/${bot[0]._id}/interface/-`);
+    }
 
     $.ajax({
         url: "localhost:3002/bList",
         method: "GET",
         dataType: "text",
         error: function(jqXHR, textStatus, error) {
-            window.alert("fuck");
+            window.alert(textStatus);
         },
         success: function(data, textStatus, jqXHR) {
-            data.forEach((brain) => {
-                listeNom.push(brain.name);
-                listeCode.push(brain.cerveau);
-            })
+            brain = data;
             console.log('nice');
         }
     });
 
 
-    listeNom.forEach((nom) => {
-        $('#selection').append($(`<option value="${nom.toLowerCase()}">${nom}</option>`));
+    code = brain.cerveau;
+
+    window.bot = [brain, new RiveScript()];
+    window.bot[1].stream(code, function(error) {
+        window.alert("Error in the RiveScript code:\n\n" + error);
     });
+    window.bot[1].sortReplies();
+    fetch(`http://localhost:3002/sesscount/${bot[0]._id}/interface/+`);
 
-    $("#selection").change(() => {
-        let $selected = $("#selection option:selected")[0];
-        if ($selected.value !== "") {
+    // Reset the dialogue.
+    $("#dialogue").empty();
 
-            if ($selected.value === 'coco') {
-                code = Coco;
-            } else {
-                code = Steve;
-            }
-
-            window.bot = new RiveScript();
-            window.bot.setHandler("coffeescript", new RSCoffeeScript(window.bot));
-            window.bot.stream(code, function(error) {
-                window.alert("Error in your RiveScript code:\n\n" + error);
-            });
-            window.bot.sortReplies();
-
-            // Reset the dialogue.
-            $("#dialogue").empty();
-        }
-    });
 
 
     $("#message").keydown((e) => {
@@ -56,7 +42,7 @@ $(document).ready(() => {
             var $dialogue = $("#dialogue");
             var $message = $("#message");
 
-            if (window.bot === null) {
+            if (window.bot[1] === null) {
                 return; // No bot? Weird.
             }
 
@@ -72,7 +58,7 @@ $(document).ready(() => {
             $message.val("");
 
             // Fetch the reply.
-            window.bot.reply("local-user", message).then((reply) => {
+            window.bot[1].reply("local-user", message).then((reply) => {
                 reply = reply.replace(new RegExp("\n", "g"), "<br>");
 
                 // Update the dialogue.
