@@ -23,8 +23,12 @@
 
                 <input type="text" class="form-control" name="nom" placeholder="Nom" required="" autofocus="" />
                 <input type="password" class="form-control" name="mdp" placeholder="Mot de passe" required="" />
-
-                <button class="btn btn-lg btn-primary btn-block" name="Submit" value="SignIn" type="Submit">Sign In</button>
+                <% if (undefined !== error){%>
+                    <strong>
+                <%= error %>
+                        </strong>
+                    <% } %>
+                        <button class="btn btn-lg btn-primary btn-block" name="Submit" value="SignIn" type="Submit">Sign In</button>
             </form>
         </div>
     </div>

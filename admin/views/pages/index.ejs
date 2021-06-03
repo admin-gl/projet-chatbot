@@ -67,6 +67,7 @@
         } else if (!session.loggedIn){
         %>
                 <a href="login">Connexion</a>
+                <a href="signin">S'enregistrer</a>
 
                 <%    
         }
@@ -89,21 +90,21 @@
             </h1>
             <% if (undefined !== session && session.loggedIn){
             %>
+                <% if (session.isAdmin){ %>
+                    <form action="uploadbot" method="POST" enctype="multipart/form-data">
+                        <input id="botfile" type="file" name="botfile" />
+                        <input type="submit">
+                    </form>
 
-                <form action="uploadbot" method="POST" enctype="multipart/form-data">
-                    <input id="botfile" type="file" name="botfile" />
-                    <input type="submit">
-                </form>
-
-                <form action="newdefault" method="POST">
-                    <input type="submit" value="Nouveau par défaut">
-                </form>
-
-                <ul>
-                    <% if (undefined !== bList){
-                    bList.forEach(function(brain) { %>
-                        <li>
-                            <strong>
+                    <form action="newdefault" method="POST">
+                        <input type="submit" value="Nouveau par défaut">
+                    </form>
+                    <% } %>
+                        <ul>
+                            <% if (undefined !== bList){
+                                bList.forEach(function(brain) { %>
+                                <li>
+                                    <strong>
                             <%= brain.nom %>
                             <form action= "<%=`/chat/${session._id}/${brain._id}`%>" method="GET">
                                 <input type="submit" value="Chatter"/>
@@ -146,11 +147,11 @@
                             </div>
                             <% } %>
                         </strong>
-                        </li>
-                        <% });} %>
-                </ul>
+                                </li>
+                                <% });} %>
+                        </ul>
 
-                <%
+                        <%
             }
             %>
         </div>

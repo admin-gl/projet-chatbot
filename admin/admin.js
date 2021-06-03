@@ -48,6 +48,10 @@ administrator.get("/login", (req, res) => {
     res.render("pages/login")
 });
 
+administrator.get("/signin", (req, res) => {
+    res.render("pages/signin", { error: "" })
+});
+
 administrator.post("/delete", (req, res) => {
     id = req.body.id
         //console.log("delete bot id : ", botId)
@@ -87,14 +91,28 @@ administrator.post("/login", (req, res) => {
         }
     })
 })
-administrator.get("/signin", (req, res) => {
-    res.render("pages/signinpage")
-})
 
 administrator.post("/signin", (req, res) => {
     var nom = req.body.nom
     var mdp = req.body.mdp
-    User.signin(new User(nom, prenom))
+    newUser = new user(nom, mdp)
+    newUserString = JSON.stringify(newUser)
+    fetch("http://localhost:3002/signin/", {
+        method: "POST",
+        body: newUserString,
+        headers: { "Content-Type": "application/json" }
+    }).then(result => result.json()).then((json) => {
+        console.log(json)
+        if (json.success == true) {
+
+            req.session.loggedIn = true
+            req.session.userName = json.nom
+            req.session.isAdmin = json.admin
+            res.redirect("/")
+        } else if (json.success == false) {
+            res.render("pages/signin", { error: "Utilisateur déjà enregistré" })
+        }
+    })
 })
 
 administrator.post("/uploadbot", (req, res) => {
