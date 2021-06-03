@@ -15,7 +15,8 @@ const { userInfo } = require("os");
 const { emitWarning } = require("process");
 const { get } = require("http");
 const apiURI = "http://localhost:3002"
-const session = require("express-session")
+const session = require("express-session");
+const { response } = require("express");
 
 
 administrator.use(fileupload({
@@ -34,7 +35,7 @@ administrator.get("/logout", (req, res) => {
     res.redirect("/")
 })
 
-administrator.get("/", (req, res) => {
+administrator.get("/", async(req, res) => {
 
     fetch(apiURI + "/bList/all").then(res => res.json()).then(jSon => {
         res.render("pages/index", { bList: jSon, session: req.session })
@@ -70,16 +71,16 @@ administrator.post("/login", (req, res) => {
         body: userString,
         headers: { "Content-Type": "application/json" }
     }).then(result => result.json()).then((json) => {
-        console.log(json)
-        if (json) {
+        //console.log(json)
+        if (json !== false) {
             fetch(apiURI + "/bList/all").then(res => res.json()).then(jSon => {
                 req.session.loggedIn = true
-                req.session.userName = uSer.nom
-                req.session.isAdmin = uSer.admin
+                req.session.userName = json.name
+                req.session.isAdmin = json.admin
                 console.log(req.session)
                 res.redirect("/")
             })
-        } else {
+        } else if (json == false) {
             res.sendStatus(404)
         }
     })

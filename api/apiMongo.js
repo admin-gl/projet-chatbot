@@ -35,10 +35,11 @@ async function auth(user) {
     nomU = user.nom
     mdpU = user.mdp
     res = await client.db("projectDB").collection("users").findOne({ name: nomU })
+    console.log(res)
     if (res.password != mdpU) {
         return false
     } else if (res.password == mdpU) {
-        return true
+        return res
     }
 }
 
@@ -200,12 +201,12 @@ api.get("/bList/:interface", async(req, res) => {
 
 api.post("/login", async(req, res) => {
     user = req.body
-    aUth = await auth(user)
-    console.log(aUth)
-    if (aUth) {
-        res.send(true)
-    } else {
+    user = await auth(user)
+    console.log(user)
+    if (user == false) {
         res.send(false)
+    } else {
+        res.send(JSON.stringify(user))
     }
 })
 

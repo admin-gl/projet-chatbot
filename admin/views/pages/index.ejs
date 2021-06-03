@@ -61,6 +61,17 @@
 
 <body class="container">
     <header>
+        <% if (undefined !== session && session.loggedIn){ %>
+            <a href="logout">Déconnexion</a>
+            <%
+        } else if (!session.loggedIn){
+        %>
+                <a href="login">Connexion</a>
+
+                <%    
+        }
+        %>
+
 
     </header>
     <main>
@@ -76,7 +87,7 @@
 
 
             </h1>
-            <% if (undefined !== session.user && session.isAdmin){
+            <% if (undefined !== session && session.isAdmin){
             %>
 
                 <form action="uploadbot" method="POST" enctype="multipart/form-data">
