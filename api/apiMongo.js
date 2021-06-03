@@ -34,11 +34,13 @@ async function listDB(client) {
 async function auth(user) {
     nomU = user.nom
     mdpU = user.mdp
-    res = await client.db("projectDB").collection("users").findOne({ name: nomU })
-    console.log(res)
-    if (res.password != mdpU) {
+    res = await client.db("projectDB").collection("users").findOne({ nom: nomU })
+    console.log("res requete auth : ", res)
+    if (res.mdp != mdpU) {
+        console.log("pas de match")
         return false
-    } else if (res.password == mdpU) {
+    } else if (res.mdp == mdpU) {
+        console.log("match")
         return res
     }
 }
@@ -49,6 +51,11 @@ async function createBot(client, bot) {
     console.log("bot", bot)
     const result = await client.db("projectDB").collection("brains").insertOne(bot)
     console.log("Ajouté nouveau cerveau")
+}
+
+async function createUser(client, user) {
+    const result = await client.db("projectDB").collection("users").insertOne(user)
+    console.log("Ajouté nouvel utilisateur")
 }
 
 async function getBrains(client, interface) {
@@ -79,14 +86,14 @@ async function getBrains(client, interface) {
     }
 }
 
-async function createUser(client, user) {
-    const result = await client.db("projectDB").collection("users").insertOne(user)
-    console.log("Ajouté nouvel utilisateur")
-}
-
 async function getUsers(client) {
     let uList = await client.db("projectDB").collection("users").find({}).toArray()
     return JSON.stringify(uList);
+}
+
+async function getUser(nOm) {
+    let res = await client.db("projectDB").collection("users").findOne({ nom: nOm })
+    return res
 }
 
 async function deleteBot(id) {
@@ -160,7 +167,6 @@ async function chPerm(interface, id) {
 
 api.get("/uList", async(req, res) => {
     var ulist = await getUsers(client)
-        //console.log(ulist);
     res.send(ulist)
 })
 
@@ -185,7 +191,6 @@ api.get("/perm/:interface/:id", (req, res) => {
 
 api.post("/uploadbot", (req, res) => {
     bot = req.body
-        //console.log("BOT", bot)
     try {
         createBot(client, bot)
     } catch (error) {
@@ -201,13 +206,28 @@ api.get("/bList/:interface", async(req, res) => {
 
 api.post("/login", async(req, res) => {
     user = req.body
-    user = await auth(user)
-    console.log(user)
-    if (user == false) {
+    uSer = await auth(user)
+    if (uSer == false) {
         res.send(false)
     } else {
-        res.send(JSON.stringify(user))
+        res.send(JSON.stringify(uSer))
     }
+})
+
+api.post("/signin", async(req, res) => {
+    let user = req.body
+    let uSer = await getUser(user.nom)
+    if (uSer == null) {
+        let r = await createUser(client, user)
+        user.success = true
+        res.send(user)
+            //console.log(JSON.stringify(user))
+    } else if (uSer.nom == user.nom) {
+        user.success = false
+        res.send(user)
+            //console.log(JSON.stringify(user))
+    }
+
 })
 
 
