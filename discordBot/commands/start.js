@@ -36,7 +36,7 @@ module.exports = {
                         console.error("Error in your RiveScript code:\n\n" + error);
                     });
                     bot.sortReplies();
-                    //fetch(`http://localhost:3002/sesscount/${brain._id}/discord/+`);
+                    fetch(`http://localhost:3002/sesscount/${brain._id}/discord/+`);
                     BrainMap.set(channel.id, [bot, brain]);
                     timestamps.set(channel.id, channel.createdAt);
                 });

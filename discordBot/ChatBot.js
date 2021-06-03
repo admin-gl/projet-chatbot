@@ -39,8 +39,10 @@ client.on('message', message => {
         if (message.content === "c.stop") { // supprime le channel et les informations relatives dans les structures
             let i = listeChannel.findIndex(id => id === message.channel.id);
             listeChannel.splice(i, 1);
+            let _id = BrainMap.get(message.channel.id)[1]._id;
             BrainMap.delete(message.channel.id);
             message.channel.delete();
+            fetch(`http://localhost:3002/sesscount/${_id}/discord/-`);
         } else { // traitement d'un message de chat pour le rivescript
             let bot = BrainMap.get(message.channel.id)[0];
             bot.reply("local-user", message.content)
@@ -82,7 +84,7 @@ function timeout() { // supprime les conversations discord non utilisées
     toRemove.forEach(element => {
         let i = listeChannel.findIndex(chanId => chanId === element[0]);
         listeChannel.splice(i, 1);
-        //fetch(`http://localhost:3002/sesscount/${element[1]}/discord/-`);
+        fetch(`http://localhost:3002/sesscount/${element[1]}/discord/-`);
     });
     setTimeout(timeout, 5000);
 }
