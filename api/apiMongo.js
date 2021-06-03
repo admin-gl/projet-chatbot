@@ -176,6 +176,7 @@ api.get("/delete/:id", (req, res) => {
     deleteBot(id)
 })
 
+
 api.get("/perm/:interface/:id", (req, res) => {
     var id = req.params["id"]
     var interface = req.params["interface"]
@@ -196,6 +197,15 @@ api.get("/bList/:interface", async(req, res) => {
     var iface = req.params["interface"]
     var bList = await getBrains(client, iface)
     res.send(bList)
+})
+
+api.get("/brain/:id", async(req, res) => {
+    var id = req.params["id"];
+    var bot = await client.db("projectDB")
+        .collection("brains")
+        .find({ _id: ObjectId(id) })
+        .toArray()
+    res.send(bot[0]);
 })
 
 api.post("/login", async(req, res) => {

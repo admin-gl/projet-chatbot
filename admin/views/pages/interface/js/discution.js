@@ -1,27 +1,13 @@
 ﻿window.bot = null;
-let brain = null;
+let brain = window.brain;
 let code = '';
 let Steve = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- je comprends pas frere';
 
 $(document).ready(() => {
 
     document.onbeforeunload = () => {
-        fetch(`http://localhost:3002/sesscount/${bot[0]._id}/interface/-`);
+        fetch(`http://localhost:3002/sesscount/${window.bot[0]._id}/interface/-`);
     }
-
-    $.ajax({
-        url: "localhost:3002/bList",
-        method: "GET",
-        dataType: "text",
-        error: function(jqXHR, textStatus, error) {
-            window.alert(textStatus);
-        },
-        success: function(data, textStatus, jqXHR) {
-            brain = data;
-            console.log('nice');
-        }
-    });
-
 
     code = brain.cerveau;
 
@@ -30,7 +16,7 @@ $(document).ready(() => {
         window.alert("Error in the RiveScript code:\n\n" + error);
     });
     window.bot[1].sortReplies();
-    fetch(`http://localhost:3002/sesscount/${bot[0]._id}/interface/+`);
+    fetch(`http://localhost:3002/sesscount/${window.bot[0]._id}/interface/+`);
 
     // Reset the dialogue.
     $("#dialogue").empty();

@@ -121,6 +121,13 @@ administrator.post("/newdefault", (req, res) => {
     res.redirect("/")
 })
 
+administrator.get("/:userID/:botID/interface", async(req, res) => {
+    let brain = await fetch(`http://localhost:3002/bList/${req.params["botID"]}`);
+
+    res.render("pages/interface/discution.ejs", { brain: brain });
+})
+
+
 administrator.listen(admin_port, () => {
     console.log("Administrator listening on port 3001");
 })
