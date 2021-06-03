@@ -61,6 +61,17 @@
 
 <body class="container">
     <header>
+        <% if (undefined !== session && session.loggedIn){ %>
+            <a href="logout">Déconnexion</a>
+            <%
+        } else if (!session.loggedIn){
+        %>
+                <a href="login">Connexion</a>
+
+                <%    
+        }
+        %>
+
 
     </header>
     <main>
@@ -76,7 +87,7 @@
 
 
             </h1>
-            <% if (undefined !== session.user && session.isAdmin){
+            <% if (undefined !== session && session.loggedIn){
             %>
 
                 <form action="uploadbot" method="POST" enctype="multipart/form-data">
@@ -94,17 +105,20 @@
                         <li>
                             <strong>
                             <%= brain.nom %>
+                            <form action="/chat" method="POST">
+                                <input type="hidden" name="chatid" value="<%= brain._id %>" />
+                                <input type="submit" value="Chatter"/>
+                            </form>
                             <br>
+                            <% if (undefined !== session && session.isAdmin){ %>
                             <a>Sessions actives : Discord (<%= brain.dsSessions %>), Mastodon (<%= brain.msSessions %>), Navigateur (<%= brain.nvSessions %>)</a>
                             <form action="/delete" method="POST">
                                 <input type="hidden" name="id" value="<%= brain._id %>" />
                                 <input type="submit" value="Supprimer"/>
                             </form>
-                            
                             <div class="dropdown">
                                 <button class="dropbtn">Permissions</button>
                                 <div class="dropdown-content">
-    
                                     <form action="/perm/discord" method="POST">
                                         <input type="hidden" name="id" value="<%= brain._id %>" />
                                         <% if (brain.discord){ %>
@@ -113,7 +127,6 @@
                                             <input type="submit" value="Discord" style="color: rgb(133, 0, 0);">
                                         <% } %>
                                     </form>
-    
                                     <form action="/perm/mastodon" method="POST">
                                         <input type="hidden" name="id" value="<%= brain._id %>" />
                                         <% if (brain.mastodon){ %>
@@ -122,7 +135,6 @@
                                             <input type="submit" value="Mastodon" style="color: rgb(133, 0, 0);">
                                         <% } %>
                                     </form>
-    
                                     <form action="/perm/navigateur" method="POST">
                                         <input type="hidden" name="id" value="<%= brain._id %>" />
                                         <% if (brain.notreInterface){ %>
@@ -133,7 +145,7 @@
                                     </form>
                                 </div>
                             </div>
-                            
+                            <% } %>
                         </strong>
                         </li>
                         <% });} %>
