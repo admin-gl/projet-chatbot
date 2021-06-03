@@ -106,9 +106,11 @@
                                 <li>
                                     <strong>
                             <%= brain.nom %>
-                            <form action= "<%=`/chat/${session._id}/${brain._id}`%>" method="GET">
-                                <input type="submit" value="Chatter"/>
-                            </form>
+                            <%if(brain.notreInterface){%>
+                                <form action= "<%=`/chat/${session._id}/${brain._id}`%>" method="GET">
+                                    <input type="submit" value="Chatter"/>
+                                </form>
+                            <%}%>
                             <br>
                             <% if (undefined !== session && session.isAdmin){ %>
                             <a>Sessions actives : Discord (<%= brain.dsSessions %>), Mastodon (<%= brain.msSessions %>), Navigateur (<%= brain.nvSessions %>)</a>
