@@ -13,13 +13,17 @@
         let brain = null;
         let code = '';
         let user = '';
-        let Steve = '> begin\n\t+ request\n\t- {ok}\n< begin\n+ salut\n- hello !\n\n+ *\n- je comprends pas frere';
+
+        window.addEventListener('beforeunload', () => {
+            fetch(`http://localhost:3002/sesscount/${window.bot[0]._id}/navigateur/-`, {
+                mode: "no-cors"
+            }).catch(err => console.log(err));
+        });
 
         $(document).ready(() => {
 
-            document.onbeforeunload = () => {
-                fetch(`http://localhost:3002/sesscount/${window.bot[0]._id}/interface/-`);
-            }
+
+
             brain = <%-JSON.stringify(brain) %>;
             user = "<%= session.userName %>";
 
@@ -30,12 +34,12 @@
                 window.alert("Error in the RiveScript code:\n\n" + error);
             });
             window.bot[1].sortReplies();
-            fetch(`http://localhost:3002/sesscount/${window.bot[0]._id}/interface/+`).catch(err => console.log(err));
+            fetch(`http://localhost:3002/sesscount/${window.bot[0]._id}/navigateur/+`, {
+                mode: "no-cors"
+            }).catch(err => console.log(err));
 
             // Reset the dialogue.
             $("#dialogue").empty();
-
-
 
             $("#message").keydown((e) => {
                 if (e.keyCode === 13) {

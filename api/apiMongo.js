@@ -17,7 +17,7 @@ async function main() {
     try {
         await client.connect()
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 
@@ -231,11 +231,9 @@ api.post("/signin", async(req, res) => {
         let r = await createUser(client, user)
         user.success = true
         res.send(user)
-            //console.log(JSON.stringify(user))
     } else if (uSer.nom == user.nom) {
         user.success = false
         res.send(user)
-            //console.log(JSON.stringify(user))
     }
 
 })

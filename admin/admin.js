@@ -19,7 +19,6 @@ const session = require("express-session");
 const { response } = require("express");
 const { json } = require("body-parser");
 
-
 administrator.use(fileupload({
     createParentPath: false,
     useTempFiles: true,
@@ -54,7 +53,6 @@ administrator.get("/signin", (req, res) => {
 
 administrator.post("/delete", (req, res) => {
     id = req.body.id
-        //console.log("delete bot id : ", botId)
     fetch(apiURI + "/delete/" + id)
     res.redirect("/")
 })
@@ -76,14 +74,13 @@ administrator.post("/login", (req, res) => {
         body: userString,
         headers: { "Content-Type": "application/json" }
     }).then(result => result.json()).then((json) => {
-        //console.log(json)
+
         if (json !== false) {
             fetch(apiURI + "/bList/all").then(res => res.json()).then(jSon => {
                 req.session.loggedIn = true
                 req.session.userName = json.nom
                 req.session.isAdmin = json.admin
                 req.session._id = json._id
-                console.log(req.session)
                 res.redirect("/")
             })
         } else if (json == false) {
@@ -102,7 +99,7 @@ administrator.post("/signin", (req, res) => {
         body: newUserString,
         headers: { "Content-Type": "application/json" }
     }).then(result => result.json()).then((json) => {
-        console.log(json)
+
         if (json.success == true) {
 
             req.session.loggedIn = true
@@ -116,19 +113,14 @@ administrator.post("/signin", (req, res) => {
 })
 
 administrator.post("/uploadbot", (req, res) => {
-    //console.log("uploaded : ", req.files.botfile)
-    //console.log("path : ", req.files.botfile.tempFilePath)
     var fileString = fs.readFileSync(req.files.botfile.tempFilePath, "utf-8")
     var newBot = new bot(req.files.botfile.name, fileString)
     jsonStringBot = JSON.stringify(newBot)
-    console.log("obj : ", newBot)
-    console.log("json : ", jsonStringBot)
     fetch("http://localhost:3002/uploadbot/", {
-            method: "POST",
-            body: jsonStringBot,
-            headers: { "Content-Type": "application/json" }
-        })
-        //console.log(fileString)
+        method: "POST",
+        body: jsonStringBot,
+        headers: { "Content-Type": "application/json" }
+    })
     res.redirect("/")
 })
 administrator.post("/newdefault", (req, res) => {
@@ -143,7 +135,6 @@ administrator.post("/newdefault", (req, res) => {
 })
 
 administrator.get("/chat/:userID/:botID", async(req, res) => {
-    console.log(req.session);
     fetch(`http://localhost:3002/brain/${req.params["botID"]}`)
         .then(x => x.json())
         .then(brain => res.render("pages/discution.ejs", { brain: brain, session: req.session }));
