@@ -11,13 +11,13 @@ const path = require("path");
 const fs = require("fs");
 const bot = require("./bot.js");
 const user = require("./user.js");
-const { userInfo } = require("os");
-const { emitWarning } = require("process");
-const { get } = require("http");
+//const { userInfo } = require("os");
+//const { emitWarning } = require("process");
+//const { get } = require("http");
 const apiURI = "http://localhost:3002"
 const session = require("express-session");
-const { response } = require("express");
-const { json } = require("body-parser");
+//const { response } = require("express");
+//const { json } = require("body-parser");
 
 administrator.use(fileupload({
     createParentPath: false,

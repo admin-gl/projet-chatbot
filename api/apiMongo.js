@@ -23,14 +23,12 @@ async function main() {
 
 main().catch(console.error)
 
-async function listDB(client) {
-    const dblist = await client.db().admin().listDatabases()
-        //console.log("DB")
-    dblist.databases.forEach(db => {
-        console.log(db.name)
-    });
-}
-
+/*
+ * authentification utilisateur
+ * in: objet user
+ * out: faux si pas de match,
+ * out: user avec ses permission si match
+ */
 async function auth(user) {
     nomU = user.nom
     mdpU = user.mdp
@@ -45,19 +43,31 @@ async function auth(user) {
     }
 }
 
-
-
+/*
+ * insérer un creveau dans la base mongodb
+ * in: l'objet bot à insérer
+ * in: le client utilisé pour se connecter à la base
+ */
 async function createBot(client, bot) {
     console.log("bot", bot)
     const result = await client.db("projectDB").collection("brains").insertOne(bot)
     console.log("Ajouté nouveau cerveau")
 }
-
+/*
+ * insérer un utilisatuer dans la base mongodb
+ * in: l'objet user à insérer
+ * in: le client utilisé pour se connecter à la base
+ */
 async function createUser(client, user) {
     const result = await client.db("projectDB").collection("users").insertOne(user)
     console.log("Ajouté nouvel utilisateur")
 }
-
+/*
+ * récupère la liste des bots autorisés sur une interface
+ * in: l'interface en question
+ * in: le client utilisé pour se connecter à la base
+ * out: une liste d'objets bot
+ */
 async function getBrains(client, interface) {
     if (interface == "discord") {
         var bList = await client.db("projectDB")
@@ -85,22 +95,37 @@ async function getBrains(client, interface) {
         return bList;
     }
 }
-
+/*
+ * récupère la liste de tous les utilisateurs
+ * in: le client utilisé pour se connecter à la base
+ * out: la liste des utilisateurs
+ */
 async function getUsers(client) {
     let uList = await client.db("projectDB").collection("users").find({}).toArray()
     return JSON.stringify(uList);
 }
-
+/*
+ * récupère le document utilisateur ayant un nom donné
+ * in: le nom de l'utilisateur
+ * out: l'objet user 
+ */
 async function getUser(nOm) {
     let res = await client.db("projectDB").collection("users").findOne({ nom: nOm })
     return res
 }
-
+/*
+ * supprime le bot d'id donné
+ * in: l'id du bot à supprimer
+ */
 async function deleteBot(id) {
     let res = await client.db("projectDB").collection("brains").deleteOne({ "_id": ObjectId(id) })
     console.log("Successfully deleted bot id:", id)
 }
-
+/*
+ * met à jour le compteur de session active
+ * in: l'id du bot dont une session vient de s'ouvrir ou de se fermer
+ * in: indique s'il s'agit d'une ouverture ou d'une fermeture de session
+ */
 async function updateSession(id, iFace, incr) {
     var brain = await client.db("projectDB").collection("brains")
         .findOne({ "_id": ObjectId(id) })
@@ -146,7 +171,11 @@ async function updateSession(id, iFace, incr) {
         }
     }
 }
-
+/*
+ * change les permissions d'accès aux interfaces d'un bot
+ * in: lînterface à toggle
+ * in: l'id du bot
+ */
 async function chPerm(interface, id) {
     var brain = await client.db("projectDB").collection("brains")
         .findOne({ "_id": ObjectId(id) })
@@ -182,7 +211,6 @@ api.get("/delete/:id", (req, res) => {
     var id = req.params["id"]
     deleteBot(id)
 })
-
 
 api.get("/perm/:interface/:id", (req, res) => {
     var id = req.params["id"]
@@ -237,7 +265,6 @@ api.post("/signin", async(req, res) => {
     }
 
 })
-
 
 api.listen(port, () => {
     console.log("API listening on port 3002");
