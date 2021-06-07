@@ -24,3 +24,8 @@ La liste des `noms` est la suivante :
 * `-` pour la fermeture d'une session
 
 La représentation des données est en JSON, tu type `application/json`.
+
+
+## ScreenCast
+Lien pour accéder à la présentation vidéo des différentes fonctionnalités du projet : https://filesender.renater.fr/?s=download&token=eafa9fc0-16c9-45a9-ae9f-4047bf157021
+

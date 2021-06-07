@@ -121,7 +121,7 @@ administrator.post("/uploadbot", (req, res) => {
         body: jsonStringBot,
         headers: { "Content-Type": "application/json" }
     })
-    fs.unlink(req.files.botfile.tempFilePath).catch(err => consol.error(err));
+    fs.unlink(req.files.botfile.tempFilePath, function(err) { console.error(err) });
     res.redirect("/")
 })
 administrator.post("/newdefault", (req, res) => {
