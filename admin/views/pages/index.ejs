@@ -57,6 +57,11 @@
             background-color: #ffffff;
         }
     </style>
+    <script>
+        function alertRefresh() {
+            alert("Rafraîchir pour que les changements prennent effet.")
+        }
+    </script>
 </head>
 
 <body class="container">
@@ -107,9 +112,9 @@
                                     <strong>
                             <%= brain.nom %>
                             <%if(brain.notreInterface){%>
-                                <form action= "<%=`/chat/${session._id}/${brain._id}`%>" method="GET">
-                                    <input type="submit" value="Chatter"/>
-                                </form>
+                                <br>
+                                <a href="<%=`/chat/${session._id}/${brain._id}`%>" target="_blank" rel="noopener noreferrer">Chatter</a>
+
                             <%}%>
                             <br>
                             <% if (undefined !== session && session.isAdmin){ %>
@@ -124,25 +129,25 @@
                                     <form action="/perm/discord" method="POST">
                                         <input type="hidden" name="id" value="<%= brain._id %>" />
                                         <% if (brain.discord){ %>
-                                            <input type="submit" value="Discord" style="color: rgb(12, 141, 0);">
+                                            <input type="submit" value="Discord" style="color: rgb(12, 141, 0);" onclick="alertRefresh()">
                                         <% } else { %>
-                                            <input type="submit" value="Discord" style="color: rgb(133, 0, 0);">
+                                            <input type="submit" value="Discord" style="color: rgb(133, 0, 0);" onclick="alertRefresh()">
                                         <% } %>
                                     </form>
                                     <form action="/perm/mastodon" method="POST">
                                         <input type="hidden" name="id" value="<%= brain._id %>" />
                                         <% if (brain.mastodon){ %>
-                                            <input type="submit" value="Mastodon" style="color: rgb(12, 141, 0);">
+                                            <input type="submit" value="Mastodon" style="color: rgb(12, 141, 0);" onclick="alertRefresh()">
                                         <% } else { %>
-                                            <input type="submit" value="Mastodon" style="color: rgb(133, 0, 0);">
+                                            <input type="submit" value="Mastodon" style="color: rgb(133, 0, 0);" onclick="alertRefresh()">
                                         <% } %>
                                     </form>
                                     <form action="/perm/navigateur" method="POST">
                                         <input type="hidden" name="id" value="<%= brain._id %>" />
                                         <% if (brain.notreInterface){ %>
-                                            <input type="submit" value="Navigateur" style="color: rgb(12, 141, 0);">
+                                            <input type="submit" value="Navigateur" style="color: rgb(12, 141, 0);" onclick="alertRefresh()">
                                         <% } else { %>
-                                            <input type="submit" value="Navigateur" style="color: rgb(133, 0, 0);">
+                                            <input type="submit" value="Navigateur" style="color: rgb(133, 0, 0);" onclick="alertRefresh()">
                                         <% } %>
                                     </form>
                                 </div>

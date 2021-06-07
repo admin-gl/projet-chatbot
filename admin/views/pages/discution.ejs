@@ -14,10 +14,12 @@
         let code = '';
         let user = '';
 
-        window.addEventListener('beforeunload', () => {
+        window.addEventListener('beforeunload', (e) => {
             fetch(`http://localhost:3002/sesscount/${window.bot[0]._id}/navigateur/-`, {
                 mode: "no-cors"
             }).catch(err => console.log(err));
+            e.preventDefault()
+            e.returnValue = ""
         });
 
         $(document).ready(() => {
